@@ -7,15 +7,13 @@
 //
 
 #include "factorialprovider.h"
+#include "integersequence.h"
 #include <QFuture>
 #include <QtConcurrent>
 
 void FactorialProvider::load(FactorialProviderValue value) {
-    QVector<FactorialProviderValue> arr;
-    for (FactorialProviderValue i = 1; i < value; i++) {
-        arr.append(i);
-    }
-    future = QtConcurrent::mappedReduced<FactorialProviderValue>(arr, [](FactorialProviderValue number) {
+    IntegerSequence<FactorialProviderValue> factorialSequence(1, value + 1);
+    future = QtConcurrent::mappedReduced<FactorialProviderValue>(factorialSequence.begin(), factorialSequence.end(), [](FactorialProviderValue number) {
         return number;
     }, [](FactorialProviderValue &result, FactorialProviderValue currentNumber) {
         if (result == 0) {

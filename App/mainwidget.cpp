@@ -28,7 +28,7 @@ MainWidget::MainWidget(QWidget *parent): QWidget(parent) {
 
     buttonFactorial = new QPushButton("Factorial");
     QObject::connect(buttonFactorial, &QPushButton::pressed, [&]() {
-        QString textInputFactorialValue = textInputFactorial->toPlainText();
+        const auto textInputFactorialValue = textInputFactorial->toPlainText();
         factorialProvider.load(textInputFactorialValue.toLongLong());
     });
     factorialLayout->addWidget(buttonFactorial);

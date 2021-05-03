@@ -2,7 +2,7 @@ TEMPLATE = app
 
 QT += core gui widgets concurrent
 
-CONFIG += c++11
+CONFIG += c++17
 
 SOURCES += \
     factorialprovider.cpp \
@@ -11,5 +11,6 @@ SOURCES += \
 
 HEADERS += \
     factorialprovider.h \
+    integersequence.h \
     mainwidget.h
 
