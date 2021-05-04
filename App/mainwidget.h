@@ -15,6 +15,7 @@
 #include <QVBoxLayout>
 #include <QTextEdit>
 #include <QPushButton>
+#include <QProgressBar>
 #include <QPointer>
 
 class MainWidget final: public QWidget {
@@ -25,6 +26,7 @@ public:
     ~MainWidget();
 
 private slots:
+    void onProgress(double);
     void onValueReceived(FactorialProviderValue);
 
 private:
@@ -33,6 +35,8 @@ private:
     QPointer<QVBoxLayout> primeNumberLayout;
     QPointer<QTextEdit> textInputFactorial;
     QPointer<QTextEdit> textInputPrimeNumber;
+    QPointer<QProgressBar> progressBarFactorial;
+    QPointer<QProgressBar> progressBarPrimeNumber;
     QPointer<QPushButton> buttonFactorial;
     QPointer<QPushButton> buttonPrimeNumber;
     QPointer<QTextEdit> textOutputFactorial;

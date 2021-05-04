@@ -9,6 +9,7 @@
 #include "mainwidget.h"
 
 MainWidget::MainWidget(QWidget *parent): QWidget(parent) {
+    QObject::connect(&factorialProvider, SIGNAL(progress(double)), this, SLOT(onProgress(double)));
     QObject::connect(&factorialProvider, SIGNAL(valueReceived(FactorialProviderValue)), this, SLOT(onValueReceived(FactorialProviderValue)));
 
     rootLayout = new QHBoxLayout;
@@ -28,6 +29,7 @@ MainWidget::MainWidget(QWidget *parent): QWidget(parent) {
 
     buttonFactorial = new QPushButton("Factorial");
     QObject::connect(buttonFactorial, &QPushButton::pressed, [&]() {
+        progressBarFactorial->setValue(0);
         const auto textInputFactorialValue = textInputFactorial->toPlainText();
         factorialProvider.load(textInputFactorialValue.toLongLong());
     });
@@ -38,6 +40,16 @@ MainWidget::MainWidget(QWidget *parent): QWidget(parent) {
 
     });
     primeNumberLayout->addWidget(buttonPrimeNumber);
+
+    progressBarFactorial = new QProgressBar;
+    progressBarFactorial->setMinimum(0);
+    progressBarFactorial->setMaximum(100);
+    factorialLayout->addWidget(progressBarFactorial);
+
+    progressBarPrimeNumber = new QProgressBar;
+    progressBarPrimeNumber->setMinimum(0);
+    progressBarPrimeNumber->setMaximum(100);
+    primeNumberLayout->addWidget(progressBarPrimeNumber);
 
     textOutputFactorial = new QTextEdit;
     textOutputFactorial->setReadOnly(true);
@@ -54,10 +66,16 @@ MainWidget::~MainWidget() {
     delete primeNumberLayout;
     delete textInputFactorial;
     delete textInputPrimeNumber;
+    delete progressBarFactorial;
+    delete progressBarPrimeNumber;
     delete buttonFactorial;
     delete buttonPrimeNumber;
     delete textOutputFactorial;
     delete textOutputPrimeNumber;
+}
+
+void MainWidget::onProgress(double value) {
+    progressBarFactorial->setValue(value * 100);
 }
 
 void MainWidget::onValueReceived(FactorialProviderValue value) {

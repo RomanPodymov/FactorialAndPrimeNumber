@@ -20,6 +20,7 @@ public:
     void load(FactorialProviderValue);
 
 signals:
+    void progress(double);
     void valueReceived(FactorialProviderValue);
 
 private:
