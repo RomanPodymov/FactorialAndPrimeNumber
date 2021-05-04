@@ -9,9 +9,10 @@
 #ifndef FACTORIALPROVIDER_H
 #define FACTORIALPROVIDER_H
 
+#include "biginteger.h"
 #include <QFutureWatcher>
 
-using FactorialProviderValue = qlonglong;
+using FactorialProviderValue = BigInteger<int>;
 
 class FactorialProvider final: public QObject {
     Q_OBJECT

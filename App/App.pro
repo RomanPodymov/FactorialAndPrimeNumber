@@ -10,6 +10,7 @@ SOURCES += \
     mainwidget.cpp
 
 HEADERS += \
+    biginteger.h \
     factorialprovider.h \
     integersequence.h \
     mainwidget.h

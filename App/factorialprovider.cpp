@@ -12,14 +12,14 @@
 #include <QtConcurrent>
 
 void FactorialProvider::load(FactorialProviderValue value) {
-    IntegerSequence<FactorialProviderValue> factorialSequence(1, value + 1);
-    future = QtConcurrent::mappedReduced<FactorialProviderValue>(factorialSequence.begin(), factorialSequence.end(), [](IntegerSequence<FactorialProviderValue>::ConstIterator::Data data) {
+    IntegerSequence<FactorialProviderValue, qsizetype> factorialSequence(1, value + 1);
+    future = QtConcurrent::mappedReduced<FactorialProviderValue>(factorialSequence.begin(), factorialSequence.end(), [](IntegerSequence<FactorialProviderValue, qsizetype>::ConstIterator::Data data) {
         return data;
-    }, [&](FactorialProviderValue &result, IntegerSequence<FactorialProviderValue>::ConstIterator::Data data) {
-        if (result == 0) {
+    }, [&](FactorialProviderValue &result, IntegerSequence<FactorialProviderValue, qsizetype>::ConstIterator::Data data) {
+        if (result.isEmpty()) {
             result = 1;
         }
-        result *= data.value;
+        result = result * data.value;
         const auto progressValue = double(data.position + 1) / data.maxPosition;
         emit progress(progressValue);
     });

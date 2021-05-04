@@ -6,6 +6,7 @@
 //  Copyright © 2021 FactorialAndPrimeNumber. All rights reserved.
 //
 
+#include "biginteger.h"
 #include "mainwidget.h"
 
 MainWidget::MainWidget(QWidget *parent): QWidget(parent) {
@@ -31,7 +32,7 @@ MainWidget::MainWidget(QWidget *parent): QWidget(parent) {
     QObject::connect(buttonFactorial, &QPushButton::pressed, [&]() {
         progressBarFactorial->setValue(0);
         const auto textInputFactorialValue = textInputFactorial->toPlainText();
-        factorialProvider.load(textInputFactorialValue.toLongLong());
+        factorialProvider.load(BigInteger<int>(textInputFactorialValue));
     });
     factorialLayout->addWidget(buttonFactorial);
 
@@ -79,5 +80,5 @@ void MainWidget::onProgress(double value) {
 }
 
 void MainWidget::onValueReceived(FactorialProviderValue value) {
-    textOutputFactorial->setText(QString::number(value));
+    textOutputFactorial->setText(value.toString());
 }
