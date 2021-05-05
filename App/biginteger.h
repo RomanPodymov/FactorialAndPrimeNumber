@@ -38,7 +38,7 @@ public:
             sumOverflow = digitSum >= 10 ? 1 : 0;
         }
         if (sumOverflow != 0) {
-            result.digits.insert(0, 1);
+            result.digits.insert(0, sumOverflow);
         }
         return result;
     }
@@ -56,10 +56,29 @@ public:
         return result;
     }
 
+    BigInteger operator*(T const& rhs) const {
+        BigInteger result;
+        int productOverflow = 0;
+        for (auto i = digits.count() - 1; i >= 0; --i) {
+            const auto digit = digits[i];
+            const auto digitProduct = digit * rhs + productOverflow;
+            result.digits.insert(0, digitProduct % 10);
+            productOverflow = floor(double(digitProduct) / 10);
+        }
+        if (productOverflow != 0) {
+            result.digits.insert(0, productOverflow);
+        }
+        return result;
+    }
+
     BigInteger operator*(BigInteger const& rhs) const {
         BigInteger result(0);
-        for (BigInteger i = 0; i != *this; i = i + BigInteger(1)) {
-            result = result + rhs;
+        for (auto i = rhs.digits.count() - 1; i >= 0; --i) {
+            BigInteger productThisDigitRhs = *this * rhs.digits[i];
+            for (auto j = i; j < rhs.digits.count() - 1; ++j) {
+                productThisDigitRhs.digits.append(0);
+            }
+            result = result + productThisDigitRhs;
         }
         return result;
     }
