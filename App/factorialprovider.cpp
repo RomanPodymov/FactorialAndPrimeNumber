@@ -13,18 +13,22 @@
 
 void FactorialProvider::load(FactorialProviderValue value) {
     IntegerSequence<FactorialProviderValue, qsizetype> factorialSequence(1, value + FactorialProviderValue(1));
-    future = QtConcurrent::mappedReduced<FactorialProviderValue>(factorialSequence.begin(), factorialSequence.end(), [](auto data) {
+    future = QtConcurrent::mappedReduced<FactorialSequenceResult>(factorialSequence.begin(), factorialSequence.end(), [](auto data) {
         return data;
-    }, [&](FactorialProviderValue &result, auto data) {
-        if (result.isEmpty()) {
-            result = 1;
+    }, [&](FactorialSequenceResult& result, auto data) {
+        if (result.value.isEmpty()) {
+            result.value = 1;
         }
-        result = result * data.value;
-        const auto progressValue = double(data.position + 1) / data.maxPosition;
-        emit progress(progressValue);
+        result.value = result.value * data.value;
+        const auto position = data.position + 1;
+        if (position != result.position) {
+            result.position = position;
+            const auto progressValue = double(position) / data.maxPosition;
+            emit progress(progressValue);
+        }
     });
-    QObject::connect(&watcher, &QFutureWatcher<FactorialProviderValue>::finished, [&]() {
-        emit valueReceived(future.result());
+    QObject::connect(&watcher, &QFutureWatcher<FactorialSequenceResult>::finished, [&]() {
+        emit valueReceived(future.result().value);
     });
     watcher.setFuture(future);
 }

@@ -14,6 +14,13 @@
 
 using FactorialProviderValue = BigInteger<int>;
 
+struct FactorialSequenceResult {
+    FactorialSequenceResult(): value(FactorialProviderValue()), position(0) { }
+
+    FactorialProviderValue value;
+    qsizetype position;
+};
+
 class FactorialProvider final: public QObject {
     Q_OBJECT
 
@@ -25,8 +32,8 @@ signals:
     void valueReceived(FactorialProviderValue);
 
 private:
-    QFutureWatcher<FactorialProviderValue> watcher;
-    QFuture<FactorialProviderValue> future;
+    QFutureWatcher<FactorialSequenceResult> watcher;
+    QFuture<FactorialSequenceResult> future;
 };
 
 #endif // FACTORIALPROVIDER_H
