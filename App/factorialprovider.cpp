@@ -12,10 +12,10 @@
 #include <QtConcurrent>
 
 void FactorialProvider::load(FactorialProviderValue value) {
-    IntegerSequence<FactorialProviderValue, qsizetype> factorialSequence(1, value + 1);
-    future = QtConcurrent::mappedReduced<FactorialProviderValue>(factorialSequence.begin(), factorialSequence.end(), [](IntegerSequence<FactorialProviderValue, qsizetype>::ConstIterator::Data data) {
+    IntegerSequence<FactorialProviderValue, qsizetype> factorialSequence(1, value + FactorialProviderValue(1));
+    future = QtConcurrent::mappedReduced<FactorialProviderValue>(factorialSequence.begin(), factorialSequence.end(), [](auto data) {
         return data;
-    }, [&](FactorialProviderValue &result, IntegerSequence<FactorialProviderValue, qsizetype>::ConstIterator::Data data) {
+    }, [&](FactorialProviderValue &result, auto data) {
         if (result.isEmpty()) {
             result = 1;
         }

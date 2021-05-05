@@ -58,7 +58,7 @@ public:
 
     BigInteger operator*(BigInteger const& rhs) const {
         BigInteger result(0);
-        for (BigInteger i = 0; i != *this; i = i + 1) {
+        for (BigInteger i = 0; i != *this; i = i + BigInteger(1)) {
             result = result + rhs;
         }
         return result;
@@ -80,7 +80,7 @@ public:
         return !(*this == rhs);
     }
 
-    QString toString() {
+    operator QString() const {
         QString result;
         for (const auto& digit : digits) {
             result += QString::number(digit);
@@ -88,7 +88,7 @@ public:
         return result;
     }
 
-    qsizetype toNumber() {
+    operator qsizetype() const {
         qsizetype result = 0;
         for (auto i = digits.count() - 1; i >= 0; --i) {
             result += digits[i] * pow(10, digits.count() - i - 1);
@@ -96,7 +96,7 @@ public:
         return result;
     }
 
-    bool isEmpty() {
+    bool isEmpty() const {
         return digits.isEmpty();
     }
 

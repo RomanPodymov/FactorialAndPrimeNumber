@@ -32,7 +32,7 @@ MainWidget::MainWidget(QWidget *parent): QWidget(parent) {
     QObject::connect(buttonFactorial, &QPushButton::pressed, [&]() {
         progressBarFactorial->setValue(0);
         const auto textInputFactorialValue = textInputFactorial->toPlainText();
-        factorialProvider.load(BigInteger<int>(textInputFactorialValue));
+        factorialProvider.load(FactorialProviderValue(textInputFactorialValue));
     });
     factorialLayout->addWidget(buttonFactorial);
 
@@ -80,5 +80,5 @@ void MainWidget::onProgress(double value) {
 }
 
 void MainWidget::onValueReceived(FactorialProviderValue value) {
-    textOutputFactorial->setText(value.toString());
+    textOutputFactorial->setText(value);
 }
