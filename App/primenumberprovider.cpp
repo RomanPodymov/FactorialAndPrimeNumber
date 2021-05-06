@@ -13,15 +13,15 @@
 
 void PrimeNumberProvider::load(PrimeNumberProviderInputValue value) {
     IntegerSequence<PrimeNumberProviderInputValue, qsizetype> numbersSequence(1, value + PrimeNumberProviderInputValue(1));
-    future = QtConcurrent::mappedReduced<PrimeNumberProviderOutputValue>(numbersSequence.begin(), numbersSequence.end(), [](auto data) {
+    future = QtConcurrent::mappedReduced<PrimeNumberSequenceResult>(numbersSequence.begin(), numbersSequence.end(), [](auto data) {
         return data;
-    }, [&](PrimeNumberProviderOutputValue& result, auto data) {
+    }, [&](PrimeNumberSequenceResult& result, auto data) {
         if (isPrimeNumber(data.value)) {
-            result.append(data.value);
+            result.value.append(data.value);
         }
     }, QtConcurrent::ReduceOption::OrderedReduce | QtConcurrent::ReduceOption::SequentialReduce);
-    QObject::connect(&watcher, &QFutureWatcher<PrimeNumberProviderOutputValue>::finished, [&]() {
-        emit valueReceived(future.result());
+    QObject::connect(&watcher, &QFutureWatcher<PrimeNumberSequenceResult>::finished, [&]() {
+        emit valueReceived(future.result().value);
     });
     watcher.setFuture(future);
 }

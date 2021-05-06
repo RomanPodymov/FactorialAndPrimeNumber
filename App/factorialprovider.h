@@ -10,30 +10,21 @@
 #define FACTORIALPROVIDER_H
 
 #include "biginteger.h"
-#include <QFutureWatcher>
+#include "valueprovider.h"
 
 using FactorialProviderValue = BigInteger<int>;
 
-struct FactorialSequenceResult {
-    FactorialSequenceResult(): value(FactorialProviderValue()), position(0) { }
+struct FactorialSequenceResult: public SequenceResult<FactorialProviderValue> { };
 
-    FactorialProviderValue value;
-    qsizetype position;
-};
-
-class FactorialProvider final: public QObject {
+class FactorialProvider final: public ValueProvider<FactorialProviderValue, FactorialSequenceResult> {
     Q_OBJECT
 
 public:
-    void load(FactorialProviderValue);
+    void load(FactorialProviderValue) override;
 
 signals:
     void progress(double);
     void valueReceived(FactorialProviderValue);
-
-private:
-    QFutureWatcher<FactorialSequenceResult> watcher;
-    QFuture<FactorialSequenceResult> future;
 };
 
 #endif // FACTORIALPROVIDER_H

@@ -15,5 +15,5 @@ HEADERS += \
     factorialprovider.h \
     integersequence.h \
     mainwidget.h \
-    primenumberprovider.h
-
+    primenumberprovider.h \
+    valueprovider.h

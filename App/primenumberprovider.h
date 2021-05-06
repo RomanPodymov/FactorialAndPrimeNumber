@@ -9,27 +9,26 @@
 #ifndef PRIMENUMBERPROVIDER_H
 #define PRIMENUMBERPROVIDER_H
 
-#include <QFutureWatcher>
+#include "valueprovider.h"
 #include <QVector>
 
 using PrimeNumberProviderInputValue = qsizetype;
 using PrimeNumberProviderOutputValue = QVector<qsizetype>;
 
-class PrimeNumberProvider final: public QObject {
+struct PrimeNumberSequenceResult: public SequenceResult<PrimeNumberProviderOutputValue> { };
+
+class PrimeNumberProvider final: public ValueProvider<PrimeNumberProviderInputValue, PrimeNumberSequenceResult> {
     Q_OBJECT
 
 public:
-    void load(PrimeNumberProviderInputValue);
+    void load(PrimeNumberProviderInputValue) override;
 
 signals:
+    void progress(double);
     void valueReceived(PrimeNumberProviderOutputValue);
 
 private:
     bool isPrimeNumber(PrimeNumberProviderInputValue);
-
-private:
-    QFutureWatcher<PrimeNumberProviderOutputValue> watcher;
-    QFuture<PrimeNumberProviderOutputValue> future;
 };
 
 #endif // PRIMENUMBERPROVIDER_H
