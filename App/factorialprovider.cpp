@@ -26,7 +26,7 @@ void FactorialProvider::load(FactorialProviderValue value) {
             const auto progressValue = double(position) / data.maxPosition;
             emit progress(progressValue);
         }
-    });
+    }, QtConcurrent::ReduceOption::OrderedReduce | QtConcurrent::ReduceOption::SequentialReduce);
     QObject::connect(&watcher, &QFutureWatcher<FactorialSequenceResult>::finished, [&]() {
         emit valueReceived(future.result().value);
     });

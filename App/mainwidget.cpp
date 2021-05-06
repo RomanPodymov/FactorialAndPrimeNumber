@@ -10,8 +10,10 @@
 #include "mainwidget.h"
 
 MainWidget::MainWidget(QWidget *parent): QWidget(parent) {
-    QObject::connect(&factorialProvider, SIGNAL(progress(double)), this, SLOT(onProgress(double)));
-    QObject::connect(&factorialProvider, SIGNAL(valueReceived(FactorialProviderValue)), this, SLOT(onValueReceived(FactorialProviderValue)));
+    QObject::connect(&factorialProvider, SIGNAL(progress(double)), this, SLOT(onFactorialProgress(double)));
+    QObject::connect(&factorialProvider, SIGNAL(valueReceived(FactorialProviderValue)), this, SLOT(onFactorialValueReceived(FactorialProviderValue)));
+
+    QObject::connect(&primeNumberProvider, SIGNAL(valueReceived(PrimeNumberProviderOutputValue)), this, SLOT(onPrimeNumberValueReceived(PrimeNumberProviderOutputValue)));
 
     rootLayout = new QHBoxLayout;
     setLayout(rootLayout);
@@ -30,6 +32,7 @@ MainWidget::MainWidget(QWidget *parent): QWidget(parent) {
 
     buttonFactorial = new QPushButton("Factorial");
     QObject::connect(buttonFactorial, &QPushButton::pressed, [&]() {
+        textOutputFactorial->setText("");
         progressBarFactorial->setValue(0);
         const auto textInputFactorialValue = textInputFactorial->toPlainText();
         factorialProvider.load(FactorialProviderValue(textInputFactorialValue));
@@ -38,7 +41,9 @@ MainWidget::MainWidget(QWidget *parent): QWidget(parent) {
 
     buttonPrimeNumber = new QPushButton("Prime number");
     QObject::connect(buttonPrimeNumber, &QPushButton::pressed, [&]() {
-
+        textOutputPrimeNumber->setText("");
+        const auto textInputPrimeNumberValue = textInputPrimeNumber->toPlainText();
+        primeNumberProvider.load(PrimeNumberProviderInputValue(textInputPrimeNumberValue.toUInt()));
     });
     primeNumberLayout->addWidget(buttonPrimeNumber);
 
@@ -75,10 +80,23 @@ MainWidget::~MainWidget() {
     delete textOutputPrimeNumber;
 }
 
-void MainWidget::onProgress(double value) {
+void MainWidget::onFactorialProgress(double value) {
     progressBarFactorial->setValue(value * 100);
 }
 
-void MainWidget::onValueReceived(FactorialProviderValue value) {
+void MainWidget::onFactorialValueReceived(FactorialProviderValue value) {
     textOutputFactorial->setText(value);
+}
+
+void MainWidget::onPrimeNumberProgress(double value) {
+
+}
+
+void MainWidget::onPrimeNumberValueReceived(PrimeNumberProviderOutputValue value) {
+    QString result;
+    for (const auto& number : value) {
+        result += QString::number(number);
+        result += " ";
+    }
+    textOutputPrimeNumber->setText(result);
 }

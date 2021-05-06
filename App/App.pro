@@ -7,11 +7,13 @@ CONFIG += c++17
 SOURCES += \
     factorialprovider.cpp \
     main.cpp \
-    mainwidget.cpp
+    mainwidget.cpp \
+    primenumberprovider.cpp
 
 HEADERS += \
     biginteger.h \
     factorialprovider.h \
     integersequence.h \
-    mainwidget.h
+    mainwidget.h \
+    primenumberprovider.h
 

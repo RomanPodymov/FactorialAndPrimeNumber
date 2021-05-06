@@ -10,6 +10,7 @@
 #define MAINWIDGET_H
 
 #include "factorialprovider.h"
+#include "primenumberprovider.h"
 #include <QWidget>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
@@ -26,8 +27,10 @@ public:
     ~MainWidget();
 
 private slots:
-    void onProgress(double);
-    void onValueReceived(FactorialProviderValue);
+    void onFactorialProgress(double);
+    void onFactorialValueReceived(FactorialProviderValue);
+    void onPrimeNumberProgress(double);
+    void onPrimeNumberValueReceived(PrimeNumberProviderOutputValue);
 
 private:
     QPointer<QHBoxLayout> rootLayout;
@@ -43,7 +46,8 @@ private:
     QPointer<QTextEdit> textOutputPrimeNumber;
 
 private:
-   FactorialProvider factorialProvider;
+    FactorialProvider factorialProvider;
+    PrimeNumberProvider primeNumberProvider;
 };
 
 #endif // MAINWIDGET_H
