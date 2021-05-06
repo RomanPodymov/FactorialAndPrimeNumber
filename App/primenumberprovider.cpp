@@ -19,6 +19,7 @@ void PrimeNumberProvider::load(PrimeNumberProviderInputValue value) {
         if (isPrimeNumber(data.value)) {
             result.value.append(data.value);
         }
+        EMIT_PROGRESS(data, result)
     }, QtConcurrent::ReduceOption::OrderedReduce | QtConcurrent::ReduceOption::SequentialReduce);
     QObject::connect(&watcher, &QFutureWatcher<PrimeNumberSequenceResult>::finished, [&]() {
         emit valueReceived(future.result().value);

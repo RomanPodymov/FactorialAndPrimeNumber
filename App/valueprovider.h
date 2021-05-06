@@ -11,6 +11,14 @@
 
 #include <QFutureWatcher>
 
+#define EMIT_PROGRESS(data, result) \
+    const auto position = data.position + 1; \
+    if (position != result.position) { \
+        result.position = position; \
+        const auto progressValue = double(position) / data.maxPosition; \
+        emit progress(progressValue); \
+    }
+
 template <typename ValueType>
 struct SequenceResult {
     SequenceResult(): value(ValueType()), position(0) { }

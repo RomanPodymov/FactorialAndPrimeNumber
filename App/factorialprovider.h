@@ -25,6 +25,9 @@ public:
 signals:
     void progress(double);
     void valueReceived(FactorialProviderValue);
+
+private:
+    bool preprocessValue(FactorialProviderValue);
 };
 
 #endif // FACTORIALPROVIDER_H

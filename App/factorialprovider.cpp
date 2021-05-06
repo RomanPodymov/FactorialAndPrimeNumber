@@ -12,6 +12,9 @@
 #include <QtConcurrent>
 
 void FactorialProvider::load(FactorialProviderValue value) {
+    if (preprocessValue(value)) {
+        return;
+    }
     IntegerSequence<FactorialProviderValue, qsizetype> factorialSequence(1, value + FactorialProviderValue(1));
     future = QtConcurrent::mappedReduced<FactorialSequenceResult>(factorialSequence.begin(), factorialSequence.end(), [](auto data) {
         return data;
@@ -20,15 +23,19 @@ void FactorialProvider::load(FactorialProviderValue value) {
             result.value = 1;
         }
         result.value = result.value * data.value;
-        const auto position = data.position + 1;
-        if (position != result.position) {
-            result.position = position;
-            const auto progressValue = double(position) / data.maxPosition;
-            emit progress(progressValue);
-        }
+        EMIT_PROGRESS(data, result)
     }, QtConcurrent::ReduceOption::OrderedReduce | QtConcurrent::ReduceOption::SequentialReduce);
     QObject::connect(&watcher, &QFutureWatcher<FactorialSequenceResult>::finished, [&]() {
         emit valueReceived(future.result().value);
     });
     watcher.setFuture(future);
+}
+
+bool FactorialProvider::preprocessValue(FactorialProviderValue value) {
+    if (value == FactorialProviderValue(0)) {
+        emit progress(1.0);
+        emit valueReceived(FactorialProviderValue(1));
+        return true;
+    }
+    return false;
 }
