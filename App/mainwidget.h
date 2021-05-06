@@ -48,6 +48,7 @@ private:
 private:
     FactorialProvider factorialProvider;
     PrimeNumberProvider primeNumberProvider;
+    const int progressBarMaxValue = 100;
 };
 
 #endif // MAINWIDGET_H

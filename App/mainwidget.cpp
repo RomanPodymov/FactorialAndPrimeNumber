@@ -13,6 +13,7 @@ MainWidget::MainWidget(QWidget *parent): QWidget(parent) {
     QObject::connect(&factorialProvider, SIGNAL(progress(double)), this, SLOT(onFactorialProgress(double)));
     QObject::connect(&factorialProvider, SIGNAL(valueReceived(FactorialProviderValue)), this, SLOT(onFactorialValueReceived(FactorialProviderValue)));
 
+    QObject::connect(&primeNumberProvider, SIGNAL(progress(double)), this, SLOT(onPrimeNumberProgress(double)));
     QObject::connect(&primeNumberProvider, SIGNAL(valueReceived(PrimeNumberProviderOutputValue)), this, SLOT(onPrimeNumberValueReceived(PrimeNumberProviderOutputValue)));
 
     rootLayout = new QHBoxLayout;
@@ -49,12 +50,12 @@ MainWidget::MainWidget(QWidget *parent): QWidget(parent) {
 
     progressBarFactorial = new QProgressBar;
     progressBarFactorial->setMinimum(0);
-    progressBarFactorial->setMaximum(100);
+    progressBarFactorial->setMaximum(progressBarMaxValue);
     factorialLayout->addWidget(progressBarFactorial);
 
     progressBarPrimeNumber = new QProgressBar;
     progressBarPrimeNumber->setMinimum(0);
-    progressBarPrimeNumber->setMaximum(100);
+    progressBarPrimeNumber->setMaximum(progressBarMaxValue);
     primeNumberLayout->addWidget(progressBarPrimeNumber);
 
     textOutputFactorial = new QTextEdit;
@@ -81,7 +82,7 @@ MainWidget::~MainWidget() {
 }
 
 void MainWidget::onFactorialProgress(double value) {
-    progressBarFactorial->setValue(value * 100);
+    progressBarFactorial->setValue(value * progressBarMaxValue);
 }
 
 void MainWidget::onFactorialValueReceived(FactorialProviderValue value) {
@@ -89,7 +90,7 @@ void MainWidget::onFactorialValueReceived(FactorialProviderValue value) {
 }
 
 void MainWidget::onPrimeNumberProgress(double value) {
-
+    progressBarPrimeNumber->setValue(value * progressBarMaxValue);
 }
 
 void MainWidget::onPrimeNumberValueReceived(PrimeNumberProviderOutputValue value) {

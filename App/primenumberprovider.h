@@ -27,6 +27,9 @@ signals:
     void progress(double);
     void valueReceived(PrimeNumberProviderOutputValue);
 
+protected:
+    void setupFuture(PrimeNumberProviderInputValue) override;
+
 private:
     bool isPrimeNumber(PrimeNumberProviderInputValue);
 };

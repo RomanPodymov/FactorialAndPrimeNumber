@@ -26,6 +26,9 @@ signals:
     void progress(double);
     void valueReceived(FactorialProviderValue);
 
+protected:
+    void setupFuture(FactorialProviderValue) override;
+
 private:
     bool preprocessValue(FactorialProviderValue);
 };

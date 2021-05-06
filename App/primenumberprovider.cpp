@@ -12,6 +12,14 @@
 #include <QtConcurrent>
 
 void PrimeNumberProvider::load(PrimeNumberProviderInputValue value) {
+    setupFuture(value);
+    QObject::connect(&watcher, &QFutureWatcher<PrimeNumberSequenceResult>::finished, [&]() {
+        emit valueReceived(future.result().value);
+    });
+    watcher.setFuture(future);
+}
+
+void PrimeNumberProvider::setupFuture(PrimeNumberProviderInputValue value) {
     IntegerSequence<PrimeNumberProviderInputValue, qsizetype> numbersSequence(1, value + PrimeNumberProviderInputValue(1));
     future = QtConcurrent::mappedReduced<PrimeNumberSequenceResult>(numbersSequence.begin(), numbersSequence.end(), [](auto data) {
         return data;
@@ -21,10 +29,6 @@ void PrimeNumberProvider::load(PrimeNumberProviderInputValue value) {
         }
         EMIT_PROGRESS(data, result)
     }, QtConcurrent::ReduceOption::OrderedReduce | QtConcurrent::ReduceOption::SequentialReduce);
-    QObject::connect(&watcher, &QFutureWatcher<PrimeNumberSequenceResult>::finished, [&]() {
-        emit valueReceived(future.result().value);
-    });
-    watcher.setFuture(future);
 }
 
 bool PrimeNumberProvider::isPrimeNumber(PrimeNumberProviderInputValue value) {

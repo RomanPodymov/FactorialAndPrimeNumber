@@ -34,6 +34,9 @@ public:
     virtual void load(InputValueType) = 0;
 
 protected:
+    virtual void setupFuture(InputValueType) = 0;
+
+protected:
     QFutureWatcher<SequenceResultType> watcher;
     QFuture<SequenceResultType> future;
 };
