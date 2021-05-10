@@ -27,18 +27,19 @@ struct SequenceResult {
     qsizetype position;
 };
 
-template <typename InputValueType, typename SequenceResultType>
+template <typename InputValueType, typename OutputValueType>
 class ValueProvider: public QObject {
 
 public:
     virtual void load(InputValueType) = 0;
+    virtual void load(QString) = 0;
 
 protected:
     virtual void setupFuture(InputValueType) = 0;
 
 protected:
-    QFutureWatcher<SequenceResultType> watcher;
-    QFuture<SequenceResultType> future;
+    QFutureWatcher<SequenceResult<OutputValueType>> watcher;
+    QFuture<SequenceResult<OutputValueType>> future;
 };
 
 #endif // VALUEPROVIDER_H

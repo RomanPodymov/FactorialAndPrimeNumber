@@ -14,18 +14,19 @@
 
 using PrimeNumberProviderInputValue = qsizetype;
 using PrimeNumberProviderOutputValue = QVector<qsizetype>;
+using PrimeNumberSequenceResult = SequenceResult<PrimeNumberProviderOutputValue>;
 
-struct PrimeNumberSequenceResult: public SequenceResult<PrimeNumberProviderOutputValue> { };
-
-class PrimeNumberProvider final: public ValueProvider<PrimeNumberProviderInputValue, PrimeNumberSequenceResult> {
+class PrimeNumberProvider final: public ValueProvider<PrimeNumberProviderInputValue, PrimeNumberProviderOutputValue> {
     Q_OBJECT
 
 public:
     void load(PrimeNumberProviderInputValue) override;
+    void load(QString) override;
 
 signals:
     void progress(double);
     void valueReceived(PrimeNumberProviderOutputValue);
+    void valueReceived(QString);
 
 protected:
     void setupFuture(PrimeNumberProviderInputValue) override;

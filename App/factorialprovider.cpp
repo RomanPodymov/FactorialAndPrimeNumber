@@ -18,11 +18,16 @@ void FactorialProvider::load(FactorialProviderValue value) {
     setupFuture(value);
     QObject::connect(&watcher, &QFutureWatcher<FactorialSequenceResult>::finished, [&]() {
         emit valueReceived(future.result().value);
+        emit valueReceived(QString(future.result().value));
     });
     watcher.setFuture(future);
 }
 
-void FactorialProvider::setupFuture(FactorialProviderValue value) {
+void FactorialProvider::load(QString value) {
+    load(FactorialProviderValue(value));
+}
+
+void FactorialProvider::setupFuture(FactorialProviderValue value) { 
     IntegerSequence<FactorialProviderValue, qsizetype> factorialSequence(1, value + FactorialProviderValue(1));
     future = QtConcurrent::mappedReduced<FactorialSequenceResult>(factorialSequence.begin(), factorialSequence.end(), [](auto data) {
         return data;

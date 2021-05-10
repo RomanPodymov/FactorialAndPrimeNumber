@@ -13,18 +13,19 @@
 #include "valueprovider.h"
 
 using FactorialProviderValue = BigInteger<int>;
+using FactorialSequenceResult = SequenceResult<FactorialProviderValue>;
 
-struct FactorialSequenceResult: public SequenceResult<FactorialProviderValue> { };
-
-class FactorialProvider final: public ValueProvider<FactorialProviderValue, FactorialSequenceResult> {
+class FactorialProvider final: public ValueProvider<FactorialProviderValue, FactorialProviderValue> {
     Q_OBJECT
 
 public:
     void load(FactorialProviderValue) override;
+    void load(QString) override;
 
 signals:
     void progress(double);
     void valueReceived(FactorialProviderValue);
+    void valueReceived(QString);
 
 protected:
     void setupFuture(FactorialProviderValue) override;

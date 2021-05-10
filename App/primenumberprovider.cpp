@@ -15,8 +15,18 @@ void PrimeNumberProvider::load(PrimeNumberProviderInputValue value) {
     setupFuture(value);
     QObject::connect(&watcher, &QFutureWatcher<PrimeNumberSequenceResult>::finished, [&]() {
         emit valueReceived(future.result().value);
+        QString result;
+        for (const auto& number : future.result().value) {
+            result += QString::number(number);
+            result += " ";
+        }
+        emit valueReceived(result);
     });
     watcher.setFuture(future);
+}
+
+void PrimeNumberProvider::load(QString value) {
+    load(PrimeNumberProviderInputValue(value.toUInt()));
 }
 
 void PrimeNumberProvider::setupFuture(PrimeNumberProviderInputValue value) {
