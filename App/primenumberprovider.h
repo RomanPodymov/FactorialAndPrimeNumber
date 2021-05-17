@@ -25,6 +25,7 @@ public:
 
 signals:
     void progress(double);
+    void paused();
     void valueReceived(PrimeNumberProviderOutputValue);
     void valueReceived(QString);
 

@@ -20,6 +20,9 @@ void FactorialProvider::load(FactorialProviderValue value) {
         emit valueReceived(future.result().value);
         emit valueReceived(QString(future.result().value));
     });
+    QObject::connect(&watcher, &QFutureWatcher<FactorialSequenceResult>::suspended, [&]() {
+        emit paused();
+    });
     watcher.setFuture(future);
 }
 

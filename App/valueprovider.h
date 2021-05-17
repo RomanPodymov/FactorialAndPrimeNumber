@@ -33,6 +33,9 @@ class ValueProvider: public QObject {
 public:
     virtual void load(InputValueType) = 0;
     virtual void load(QString) = 0;
+    void pause() {
+        future.suspend();
+    }
 
 protected:
     virtual void setupFuture(InputValueType) = 0;

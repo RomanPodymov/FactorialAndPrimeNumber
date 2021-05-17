@@ -24,6 +24,7 @@ public:
 
 signals:
     void progress(double);
+    void paused();
     void valueReceived(FactorialProviderValue);
     void valueReceived(QString);
 

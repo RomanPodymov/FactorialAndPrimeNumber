@@ -20,6 +20,7 @@ public:
 
 private slots:
     void onProgress(double);
+    void onPaused();
     void onValueReceived(PrimeNumberProviderOutputValue);
     void onValueReceived(QString);
 };

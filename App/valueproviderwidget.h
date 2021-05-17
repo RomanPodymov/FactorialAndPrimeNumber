@@ -42,7 +42,18 @@ public:
         rootLayout->addWidget(buttonRun);
 
         buttonPause = new QPushButton("Pause");
+        QObject::connect(buttonPause, &QPushButton::pressed, [&]() {
+            valueProviderUIState = pausing;
+            setupValueProviderUIState();
+            valueProvider.pause();
+        });
         rootLayout->addWidget(buttonPause);
+
+        buttonResume = new QPushButton("Resume");
+        QObject::connect(buttonResume, &QPushButton::pressed, [&]() {
+
+        });
+        rootLayout->addWidget(buttonResume);
 
         progressBar = new QProgressBar;
         progressBar->setMinimum(0);
@@ -62,6 +73,7 @@ public:
         delete progressBar;
         delete buttonRun;
         delete buttonPause;
+        delete buttonResume;
         delete textOutput;
     }
 
@@ -69,29 +81,67 @@ protected:
     void setupValueProviderUIState() {
         switch (valueProviderUIState) {
             case ValueProviderUIState::iddle: {
-                buttonRun->setHidden(false);
-                buttonPause->setHidden(true);
+                setOtherButtonsDisabledAndHidden(buttonRun);
                 break;
             }
 
             case ValueProviderUIState::running: {
-                buttonRun->setHidden(true);
-                buttonPause->setHidden(false);
+                setOtherButtonsDisabledAndHidden(buttonPause);
                 break;
             }
 
             case ValueProviderUIState::pausing: {
+                setOtherButtonsDisabled(std::nullopt);
+                setOtherButtonsHidden(buttonPause);
                 break;
             }
 
             case ValueProviderUIState::paused: {
+                setOtherButtonsDisabledAndHidden(buttonResume);
                 break;
             }
         }
     }
 
+private:
+    QVector<QPointer<QPushButton>> allButtons() {
+        return {
+            buttonRun,
+            buttonPause,
+            buttonResume
+        };
+    }
+
+    void setOtherButtonsDisabled(std::optional<QPointer<QPushButton>> exceptButton) {
+        const auto allButtonsValue = allButtons();
+        for (const auto& button : allButtonsValue) {
+            if (exceptButton && exceptButton == button) {
+                button->setDisabled(false);
+            } else {
+                button->setDisabled(true);
+            }
+        }
+    }
+
+    void setOtherButtonsHidden(std::optional<QPointer<QPushButton>> exceptButton) {
+        const auto allButtonsValue = allButtons();
+        for (const auto& button : allButtonsValue) {
+            if (exceptButton && exceptButton == button) {
+                button->setHidden(false);
+            } else {
+                button->setHidden(true);
+            }
+        }
+    }
+
+    void setOtherButtonsDisabledAndHidden(std::optional<QPointer<QPushButton>> exceptButton) {
+        setOtherButtonsDisabled(exceptButton);
+        setOtherButtonsHidden(exceptButton);
+    }
+
 protected:
     ValueProviderType valueProvider;
+    ValueProviderUIState valueProviderUIState;
     const int progressBarMaxValue = 100;
 
 protected:
@@ -100,10 +150,8 @@ protected:
     QPointer<QProgressBar> progressBar;
     QPointer<QPushButton> buttonRun;
     QPointer<QPushButton> buttonPause;
+    QPointer<QPushButton> buttonResume;
     QPointer<QTextEdit> textOutput;
-
-private:
-    ValueProviderUIState valueProviderUIState;
 };
 
 #endif // VALUEPROVIDERWIDGET_H
