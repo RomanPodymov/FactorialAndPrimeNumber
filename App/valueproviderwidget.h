@@ -16,7 +16,7 @@
 #include <QProgressBar>
 #include <QPointer>
 
-enum ValueProviderUIState { iddle, running, pausing, paused };
+enum ValueProviderUIState { iddle, running, pausing, paused, resuming };
 
 template <typename ValueProviderType>
 class ValueProviderWidget: public QWidget {
@@ -32,8 +32,7 @@ public:
 
         buttonRun = new QPushButton("Get value");
         QObject::connect(buttonRun, &QPushButton::pressed, [&]() {
-            valueProviderUIState = running;
-            setupValueProviderUIState();
+            setupValueProviderUIState(running);
             textOutput->setText("");
             progressBar->setValue(0);
             const auto textInputValue = textInput->toPlainText();
@@ -43,15 +42,15 @@ public:
 
         buttonPause = new QPushButton("Pause");
         QObject::connect(buttonPause, &QPushButton::pressed, [&]() {
-            valueProviderUIState = pausing;
-            setupValueProviderUIState();
+            setupValueProviderUIState(pausing);
             valueProvider.pause();
         });
         rootLayout->addWidget(buttonPause);
 
         buttonResume = new QPushButton("Resume");
         QObject::connect(buttonResume, &QPushButton::pressed, [&]() {
-
+            setupValueProviderUIState(resuming);
+            valueProvider.resume();
         });
         rootLayout->addWidget(buttonResume);
 
@@ -64,7 +63,7 @@ public:
         textOutput->setReadOnly(true);
         rootLayout->addWidget(textOutput);
 
-        setupValueProviderUIState();
+        setupValueProviderUIState(std::nullopt);
     }
 
     ~ValueProviderWidget() {
@@ -78,7 +77,10 @@ public:
     }
 
 protected:
-    void setupValueProviderUIState() {
+    void setupValueProviderUIState(std::optional<ValueProviderUIState> nextValueProviderUIState) {
+        if (nextValueProviderUIState) {
+            valueProviderUIState = nextValueProviderUIState.value();
+        }
         switch (valueProviderUIState) {
             case ValueProviderUIState::iddle: {
                 setOtherButtonsDisabledAndHidden(buttonRun);
@@ -100,11 +102,17 @@ protected:
                 setOtherButtonsDisabledAndHidden(buttonResume);
                 break;
             }
+
+            case ValueProviderUIState::resuming: {
+                setOtherButtonsDisabled(std::nullopt);
+                setOtherButtonsHidden(buttonResume);
+                break;
+            }
         }
     }
 
 private:
-    QVector<QPointer<QPushButton>> allButtons() {
+    QVector<QPointer<QPushButton>> allButtons() const {
         return {
             buttonRun,
             buttonPause,

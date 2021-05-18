@@ -25,6 +25,9 @@ void PrimeNumberProvider::load(PrimeNumberProviderInputValue value) {
     QObject::connect(&watcher, &QFutureWatcher<PrimeNumberSequenceResult>::suspended, [&]() {
         emit paused();
     });
+    QObject::connect(&watcher, &QFutureWatcher<PrimeNumberSequenceResult>::resumed, [&]() {
+        emit resumed();
+    });
     watcher.setFuture(future);
 }
 
