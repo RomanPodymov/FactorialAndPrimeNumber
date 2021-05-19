@@ -22,3 +22,10 @@ HEADERS += \
     primenumberproviderwidget.h \
     valueprovider.h \
     valueproviderwidget.h
+
+TRANSLATIONS += \
+    Translations/Translations_MainWidget_en.ts \
+    Translations/Translations_MainWidget_cs.ts
+
+RESOURCES += \
+    mainwidgetresources.qrc

@@ -8,7 +8,7 @@
 
 #include "factorialproviderwidget.h"
 
-FactorialProviderWidget::FactorialProviderWidget(QWidget *parent): ValueProviderWidget("Factorial", parent) {
+FactorialProviderWidget::FactorialProviderWidget(QWidget *parent): ValueProviderWidget(FactorialProviderWidget::tr("Factorial"), parent) {
     QObject::connect(&valueProvider, SIGNAL(progress(double)), this, SLOT(onProgress(double)));
     QObject::connect(&valueProvider, SIGNAL(paused()), this, SLOT(onPaused()));
     QObject::connect(&valueProvider, SIGNAL(resumed()), this, SLOT(onResumed()));

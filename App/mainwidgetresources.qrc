@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/translations" lang="cs">
+        <file alias="strings">Translations/Translations_MainWidget_cs.qm</file>
+    </qresource>
+    <qresource prefix="/translations">
+        <file alias="strings">Translations/Translations_MainWidget_en.qm</file>
+    </qresource>
+</RCC>

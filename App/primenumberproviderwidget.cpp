@@ -8,7 +8,7 @@
 
 #include "primenumberproviderwidget.h"
 
-PrimeNumberProviderWidget::PrimeNumberProviderWidget(QWidget *parent): ValueProviderWidget("Prime number", parent) {
+PrimeNumberProviderWidget::PrimeNumberProviderWidget(QWidget *parent): ValueProviderWidget(PrimeNumberProviderWidget::tr("Prime numbers"), parent) {
     QObject::connect(&valueProvider, SIGNAL(progress(double)), this, SLOT(onProgress(double)));
     QObject::connect(&valueProvider, SIGNAL(paused()), this, SLOT(onPaused()));
     QObject::connect(&valueProvider, SIGNAL(resumed()), this, SLOT(onResumed()));
