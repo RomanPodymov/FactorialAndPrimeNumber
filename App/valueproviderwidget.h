@@ -10,7 +10,9 @@
 #define VALUEPROVIDERWIDGET_H
 
 #include <QWidget>
+#include <QGridLayout>
 #include <QVBoxLayout>
+#include <QGroupBox>
 #include <QTextEdit>
 #include <QPushButton>
 #include <QProgressBar>
@@ -22,13 +24,19 @@ template <typename ValueProviderType>
 class ValueProviderWidget: public QWidget {
 
 public:
-    ValueProviderWidget(QWidget *parent = nullptr): QWidget(parent),
+    ValueProviderWidget(QString title, QWidget *parent = nullptr): QWidget(parent),
         valueProviderUIState(iddle) {
-        rootLayout = new QVBoxLayout;
+        rootLayout = new QGridLayout;
         setLayout(rootLayout);
 
+        groupBoxLayout = new QVBoxLayout;
+
+        groupBox = new QGroupBox(title);
+        rootLayout->addWidget(groupBox);
+        groupBox->setLayout(groupBoxLayout);
+
         textInput = new QTextEdit;
-        rootLayout->addWidget(textInput);
+        groupBoxLayout->addWidget(textInput);
 
         buttonRun = new QPushButton("Get value");
         QObject::connect(buttonRun, &QPushButton::pressed, [&]() {
@@ -38,36 +46,38 @@ public:
             const auto textInputValue = textInput->toPlainText();
             valueProvider.load(textInputValue);
         });
-        rootLayout->addWidget(buttonRun);
+        groupBoxLayout->addWidget(buttonRun);
 
         buttonPause = new QPushButton("Pause");
         QObject::connect(buttonPause, &QPushButton::pressed, [&]() {
             setupValueProviderUIState(pausing);
             valueProvider.pause();
         });
-        rootLayout->addWidget(buttonPause);
+        groupBoxLayout->addWidget(buttonPause);
 
         buttonResume = new QPushButton("Resume");
         QObject::connect(buttonResume, &QPushButton::pressed, [&]() {
             setupValueProviderUIState(resuming);
             valueProvider.resume();
         });
-        rootLayout->addWidget(buttonResume);
+        groupBoxLayout->addWidget(buttonResume);
 
         progressBar = new QProgressBar;
         progressBar->setMinimum(0);
         progressBar->setMaximum(progressBarMaxValue);
-        rootLayout->addWidget(progressBar);
+        groupBoxLayout->addWidget(progressBar);
 
         textOutput = new QTextEdit;
         textOutput->setReadOnly(true);
-        rootLayout->addWidget(textOutput);
+        groupBoxLayout->addWidget(textOutput);
 
         setupValueProviderUIState(std::nullopt);
     }
 
     ~ValueProviderWidget() {
         delete rootLayout;
+        delete groupBoxLayout;
+        delete groupBox;
         delete textInput;
         delete progressBar;
         delete buttonRun;
@@ -109,6 +119,23 @@ protected:
                 break;
             }
         }
+    }
+
+    void onProgressDefault(double value) {
+        progressBar->setValue(value * progressBarMaxValue);
+    }
+
+    void onPausedDefault() {
+        setupValueProviderUIState(paused);
+    }
+
+    void onResumedDefault() {
+        setupValueProviderUIState(running);
+    }
+
+    void onValueReceivedDefault(QString value) {
+        textOutput->setText(value);
+        setupValueProviderUIState(iddle);
     }
 
 private:
@@ -153,7 +180,9 @@ protected:
     const int progressBarMaxValue = 100;
 
 protected:
-    QPointer<QVBoxLayout> rootLayout;
+    QPointer<QGridLayout> rootLayout;
+    QPointer<QVBoxLayout> groupBoxLayout;
+    QPointer<QGroupBox> groupBox;
     QPointer<QTextEdit> textInput;
     QPointer<QProgressBar> progressBar;
     QPointer<QPushButton> buttonRun;

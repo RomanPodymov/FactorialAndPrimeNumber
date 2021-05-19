@@ -8,7 +8,7 @@
 
 #include "primenumberproviderwidget.h"
 
-PrimeNumberProviderWidget::PrimeNumberProviderWidget(QWidget *parent): ValueProviderWidget(parent) {
+PrimeNumberProviderWidget::PrimeNumberProviderWidget(QWidget *parent): ValueProviderWidget("Prime number", parent) {
     QObject::connect(&valueProvider, SIGNAL(progress(double)), this, SLOT(onProgress(double)));
     QObject::connect(&valueProvider, SIGNAL(paused()), this, SLOT(onPaused()));
     QObject::connect(&valueProvider, SIGNAL(resumed()), this, SLOT(onResumed()));
@@ -17,15 +17,15 @@ PrimeNumberProviderWidget::PrimeNumberProviderWidget(QWidget *parent): ValueProv
 }
 
 void PrimeNumberProviderWidget::onProgress(double value) {
-    progressBar->setValue(value * progressBarMaxValue);
+    onProgressDefault(value);
 }
 
 void PrimeNumberProviderWidget::onPaused() {
-    setupValueProviderUIState(paused);
+    onPausedDefault();
 }
 
 void PrimeNumberProviderWidget::onResumed() {
-    setupValueProviderUIState(running);
+    onResumedDefault();
 }
 
 void PrimeNumberProviderWidget::onValueReceived(PrimeNumberProviderOutputValue) {
@@ -33,6 +33,5 @@ void PrimeNumberProviderWidget::onValueReceived(PrimeNumberProviderOutputValue) 
 }
 
 void PrimeNumberProviderWidget::onValueReceived(QString value) {
-    textOutput->setText(value);
-    setupValueProviderUIState(iddle);
+    onValueReceivedDefault(value);
 }

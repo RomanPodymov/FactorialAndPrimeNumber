@@ -8,7 +8,7 @@
 
 #include "factorialproviderwidget.h"
 
-FactorialProviderWidget::FactorialProviderWidget(QWidget *parent): ValueProviderWidget(parent) {
+FactorialProviderWidget::FactorialProviderWidget(QWidget *parent): ValueProviderWidget("Factorial", parent) {
     QObject::connect(&valueProvider, SIGNAL(progress(double)), this, SLOT(onProgress(double)));
     QObject::connect(&valueProvider, SIGNAL(paused()), this, SLOT(onPaused()));
     QObject::connect(&valueProvider, SIGNAL(resumed()), this, SLOT(onResumed()));
@@ -17,15 +17,15 @@ FactorialProviderWidget::FactorialProviderWidget(QWidget *parent): ValueProvider
 }
 
 void FactorialProviderWidget::onProgress(double value) {
-    progressBar->setValue(value * progressBarMaxValue);
+    onProgressDefault(value);
 }
 
 void FactorialProviderWidget::onPaused() {
-    setupValueProviderUIState(paused);
+    onPausedDefault();
 }
 
 void FactorialProviderWidget::onResumed() {
-    setupValueProviderUIState(running);
+    onResumedDefault();
 }
 
 void FactorialProviderWidget::onValueReceived(FactorialProviderValue) {
@@ -33,6 +33,5 @@ void FactorialProviderWidget::onValueReceived(FactorialProviderValue) {
 }
 
 void FactorialProviderWidget::onValueReceived(QString value) {
-    textOutput->setText(value);
-    setupValueProviderUIState(iddle);
+    onValueReceivedDefault(value);
 }
