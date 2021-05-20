@@ -38,7 +38,10 @@ public:
         textInput = new QTextEdit;
         groupBoxLayout->addWidget(textInput);
 
-        buttonRun = new QPushButton("Get value");
+        buttonsLayout = new QHBoxLayout;
+        groupBoxLayout->addLayout(buttonsLayout);
+
+        buttonRun = new QPushButton(QWidget::tr("Run"));
         QObject::connect(buttonRun, &QPushButton::pressed, [&]() {
             setupValueProviderUIState(running);
             textOutput->setText("");
@@ -46,21 +49,27 @@ public:
             const auto textInputValue = textInput->toPlainText();
             valueProvider.load(textInputValue);
         });
-        groupBoxLayout->addWidget(buttonRun);
+        buttonsLayout->addWidget(buttonRun);
 
-        buttonPause = new QPushButton("Pause");
+        buttonCancel = new QPushButton(QWidget::tr("Cancel"));
+        QObject::connect(buttonCancel, &QPushButton::pressed, [&]() {
+
+        });
+        buttonsLayout->addWidget(buttonCancel);
+
+        buttonPause = new QPushButton(QWidget::tr("Pause"));
         QObject::connect(buttonPause, &QPushButton::pressed, [&]() {
             setupValueProviderUIState(pausing);
             valueProvider.pause();
         });
-        groupBoxLayout->addWidget(buttonPause);
+        buttonsLayout->addWidget(buttonPause);
 
-        buttonResume = new QPushButton("Resume");
+        buttonResume = new QPushButton(QWidget::tr("Resume"));
         QObject::connect(buttonResume, &QPushButton::pressed, [&]() {
             setupValueProviderUIState(resuming);
             valueProvider.resume();
         });
-        groupBoxLayout->addWidget(buttonResume);
+        buttonsLayout->addWidget(buttonResume);
 
         progressBar = new QProgressBar;
         progressBar->setMinimum(0);
@@ -80,7 +89,9 @@ public:
         delete groupBox;
         delete textInput;
         delete progressBar;
+        delete buttonsLayout;
         delete buttonRun;
+        delete buttonCancel;
         delete buttonPause;
         delete buttonResume;
         delete textOutput;
@@ -93,29 +104,29 @@ protected:
         }
         switch (valueProviderUIState) {
             case ValueProviderUIState::iddle: {
-                setOtherButtonsDisabledAndHidden(buttonRun);
+                setOtherButtonsDisabledAndHidden({buttonRun});
                 break;
             }
 
             case ValueProviderUIState::running: {
-                setOtherButtonsDisabledAndHidden(buttonPause);
+                setOtherButtonsDisabledAndHidden({buttonPause, buttonCancel});
                 break;
             }
 
             case ValueProviderUIState::pausing: {
-                setOtherButtonsDisabled(std::nullopt);
-                setOtherButtonsHidden(buttonPause);
+                setOtherButtonsDisabled({});
+                setOtherButtonsHidden({buttonPause, buttonCancel});
                 break;
             }
 
             case ValueProviderUIState::paused: {
-                setOtherButtonsDisabledAndHidden(buttonResume);
+                setOtherButtonsDisabledAndHidden({buttonResume, buttonCancel});
                 break;
             }
 
             case ValueProviderUIState::resuming: {
-                setOtherButtonsDisabled(std::nullopt);
-                setOtherButtonsHidden(buttonResume);
+                setOtherButtonsDisabled({});
+                setOtherButtonsHidden({buttonResume, buttonCancel});
                 break;
             }
         }
@@ -142,15 +153,16 @@ private:
     QVector<QPointer<QPushButton>> allButtons() const {
         return {
             buttonRun,
+            buttonCancel,
             buttonPause,
             buttonResume
         };
     }
 
-    void setOtherButtonsDisabled(std::optional<QPointer<QPushButton>> exceptButton) {
+    void setOtherButtonsDisabled(QVector<QPointer<QPushButton>> exceptButtons) {
         const auto allButtonsValue = allButtons();
         for (const auto& button : allButtonsValue) {
-            if (exceptButton && exceptButton == button) {
+            if (exceptButtons.contains(button)) {
                 button->setDisabled(false);
             } else {
                 button->setDisabled(true);
@@ -158,10 +170,10 @@ private:
         }
     }
 
-    void setOtherButtonsHidden(std::optional<QPointer<QPushButton>> exceptButton) {
+    void setOtherButtonsHidden(QVector<QPointer<QPushButton>> exceptButtons) {
         const auto allButtonsValue = allButtons();
         for (const auto& button : allButtonsValue) {
-            if (exceptButton && exceptButton == button) {
+            if (exceptButtons.contains(button)) {
                 button->setHidden(false);
             } else {
                 button->setHidden(true);
@@ -169,9 +181,9 @@ private:
         }
     }
 
-    void setOtherButtonsDisabledAndHidden(std::optional<QPointer<QPushButton>> exceptButton) {
-        setOtherButtonsDisabled(exceptButton);
-        setOtherButtonsHidden(exceptButton);
+    void setOtherButtonsDisabledAndHidden(QVector<QPointer<QPushButton>> exceptButtons) {
+        setOtherButtonsDisabled(exceptButtons);
+        setOtherButtonsHidden(exceptButtons);
     }
 
 protected:
@@ -185,7 +197,9 @@ protected:
     QPointer<QGroupBox> groupBox;
     QPointer<QTextEdit> textInput;
     QPointer<QProgressBar> progressBar;
+    QPointer<QHBoxLayout> buttonsLayout;
     QPointer<QPushButton> buttonRun;
+    QPointer<QPushButton> buttonCancel;
     QPointer<QPushButton> buttonPause;
     QPointer<QPushButton> buttonResume;
     QPointer<QTextEdit> textOutput;

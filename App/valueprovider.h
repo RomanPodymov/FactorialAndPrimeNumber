@@ -39,6 +39,9 @@ public:
     void resume() {
         future.resume();
     }
+    void cancel() {
+        future.cancel();
+    }
 
 protected:
     virtual void setupFuture(InputValueType) = 0;
