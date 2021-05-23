@@ -27,6 +27,7 @@ signals:
     void progress(double);
     void paused();
     void resumed();
+    void canceled();
     void valueReceived(PrimeNumberProviderOutputValue);
     void valueReceived(QString);
 

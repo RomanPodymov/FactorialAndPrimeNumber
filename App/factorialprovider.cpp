@@ -27,7 +27,7 @@ void FactorialProvider::load(FactorialProviderValue value) {
         emit resumed();
     });
     QObject::connect(&watcher, &QFutureWatcher<FactorialSequenceResult>::canceled, [&]() {
-
+        emit canceled();
     });
     watcher.setFuture(future);
 }

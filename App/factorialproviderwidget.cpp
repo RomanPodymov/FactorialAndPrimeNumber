@@ -9,11 +9,7 @@
 #include "factorialproviderwidget.h"
 
 FactorialProviderWidget::FactorialProviderWidget(QWidget *parent): ValueProviderWidget(FactorialProviderWidget::tr("Factorial"), parent) {
-    QObject::connect(&valueProvider, SIGNAL(progress(double)), this, SLOT(onProgress(double)));
-    QObject::connect(&valueProvider, SIGNAL(paused()), this, SLOT(onPaused()));
-    QObject::connect(&valueProvider, SIGNAL(resumed()), this, SLOT(onResumed()));
-    QObject::connect(&valueProvider, SIGNAL(valueReceived(FactorialProviderValue)), this, SLOT(onValueReceived(FactorialProviderValue)));
-    QObject::connect(&valueProvider, SIGNAL(valueReceived(QString)), this, SLOT(onValueReceived(QString)));
+    CONNECT_VALUE_PROVIDER_WIDGET_SLOTS(FactorialProviderValue)
 }
 
 void FactorialProviderWidget::onProgress(double value) {
@@ -26,6 +22,10 @@ void FactorialProviderWidget::onPaused() {
 
 void FactorialProviderWidget::onResumed() {
     onResumedDefault();
+}
+
+void FactorialProviderWidget::onCanceled() {
+    onCanceledDefault();
 }
 
 void FactorialProviderWidget::onValueReceived(FactorialProviderValue) {

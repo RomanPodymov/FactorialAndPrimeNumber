@@ -18,7 +18,15 @@
 #include <QProgressBar>
 #include <QPointer>
 
-enum ValueProviderUIState { iddle, running, pausing, paused, resuming };
+enum ValueProviderUIState { iddle, running, pausing, paused, resuming, cancelling };
+
+#define CONNECT_VALUE_PROVIDER_WIDGET_SLOTS(VALUE_RECEIVED_TYPE) \
+    QObject::connect(&valueProvider, SIGNAL(progress(double)), this, SLOT(onProgress(double))); \
+    QObject::connect(&valueProvider, SIGNAL(paused()), this, SLOT(onPaused())); \
+    QObject::connect(&valueProvider, SIGNAL(resumed()), this, SLOT(onResumed())); \
+    QObject::connect(&valueProvider, SIGNAL(canceled()), this, SLOT(onCanceled())); \
+    QObject::connect(&valueProvider, SIGNAL(valueReceived(VALUE_RECEIVED_TYPE)), this, SLOT(onValueReceived(VALUE_RECEIVED_TYPE))); \
+    QObject::connect(&valueProvider, SIGNAL(valueReceived(QString)), this, SLOT(onValueReceived(QString)));
 
 template <typename ValueProviderType>
 class ValueProviderWidget: public QWidget {
@@ -53,7 +61,8 @@ public:
 
         buttonCancel = new QPushButton(QWidget::tr("Cancel"));
         QObject::connect(buttonCancel, &QPushButton::pressed, [&]() {
-
+            setupValueProviderUIState(cancelling);
+            valueProvider.cancel();
         });
         buttonsLayout->addWidget(buttonCancel);
 
@@ -99,34 +108,44 @@ public:
 
 protected:
     void setupValueProviderUIState(std::optional<ValueProviderUIState> nextValueProviderUIState) {
+        const auto previousValueProviderUIState = nextValueProviderUIState;
         if (nextValueProviderUIState) {
             valueProviderUIState = nextValueProviderUIState.value();
         }
         switch (valueProviderUIState) {
             case ValueProviderUIState::iddle: {
-                setOtherButtonsDisabledAndHidden({buttonRun});
+                setOtherButtonsDisabledAndHidden({buttonRun}, false);
                 break;
             }
 
             case ValueProviderUIState::running: {
-                setOtherButtonsDisabledAndHidden({buttonPause, buttonCancel});
+                setOtherButtonsDisabledAndHiddenWhenRunning(false);
                 break;
             }
 
             case ValueProviderUIState::pausing: {
-                setOtherButtonsDisabled({});
-                setOtherButtonsHidden({buttonPause, buttonCancel});
+                setOtherButtonsDisabledAndHiddenWhenRunning(true);
                 break;
             }
 
             case ValueProviderUIState::paused: {
-                setOtherButtonsDisabledAndHidden({buttonResume, buttonCancel});
+                setOtherButtonsDisabledAndHiddenWhenPaused(false);
                 break;
             }
 
             case ValueProviderUIState::resuming: {
-                setOtherButtonsDisabled({});
-                setOtherButtonsHidden({buttonResume, buttonCancel});
+                setOtherButtonsDisabledAndHiddenWhenPaused(true);
+                break;
+            }
+
+            case ValueProviderUIState::cancelling: {
+                if (previousValueProviderUIState == running || previousValueProviderUIState == pausing) {
+                    setOtherButtonsDisabledAndHiddenWhenRunning(true);
+                } else if (previousValueProviderUIState == paused || previousValueProviderUIState == resuming) {
+                    setOtherButtonsDisabledAndHiddenWhenPaused(true);
+                } else {
+                    setOtherButtonsDisabled({});
+                }
                 break;
             }
         }
@@ -142,6 +161,10 @@ protected:
 
     void onResumedDefault() {
         setupValueProviderUIState(running);
+    }
+
+    void onCanceledDefault() {
+        setupValueProviderUIState(iddle);
     }
 
     void onValueReceivedDefault(QString value) {
@@ -181,9 +204,21 @@ private:
         }
     }
 
-    void setOtherButtonsDisabledAndHidden(QVector<QPointer<QPushButton>> exceptButtons) {
-        setOtherButtonsDisabled(exceptButtons);
+    void setOtherButtonsDisabledAndHidden(QVector<QPointer<QPushButton>> exceptButtons, bool disableAll) {
+        if (disableAll) {
+            setOtherButtonsDisabled({});
+        } else {
+            setOtherButtonsDisabled(exceptButtons);
+        }
         setOtherButtonsHidden(exceptButtons);
+    }
+
+    void setOtherButtonsDisabledAndHiddenWhenRunning(bool disableAll) {
+        setOtherButtonsDisabledAndHidden({buttonPause, buttonCancel}, disableAll);
+    }
+
+    void setOtherButtonsDisabledAndHiddenWhenPaused(bool disableAll) {
+        setOtherButtonsDisabledAndHidden({buttonResume, buttonCancel}, disableAll);
     }
 
 protected:

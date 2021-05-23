@@ -9,11 +9,7 @@
 #include "primenumberproviderwidget.h"
 
 PrimeNumberProviderWidget::PrimeNumberProviderWidget(QWidget *parent): ValueProviderWidget(PrimeNumberProviderWidget::tr("Prime numbers"), parent) {
-    QObject::connect(&valueProvider, SIGNAL(progress(double)), this, SLOT(onProgress(double)));
-    QObject::connect(&valueProvider, SIGNAL(paused()), this, SLOT(onPaused()));
-    QObject::connect(&valueProvider, SIGNAL(resumed()), this, SLOT(onResumed()));
-    QObject::connect(&valueProvider, SIGNAL(valueReceived(PrimeNumberProviderOutputValue)), this, SLOT(onValueReceived(PrimeNumberProviderOutputValue)));
-    QObject::connect(&valueProvider, SIGNAL(valueReceived(QString)), this, SLOT(onValueReceived(QString)));
+    CONNECT_VALUE_PROVIDER_WIDGET_SLOTS(PrimeNumberProviderOutputValue)
 }
 
 void PrimeNumberProviderWidget::onProgress(double value) {
@@ -26,6 +22,10 @@ void PrimeNumberProviderWidget::onPaused() {
 
 void PrimeNumberProviderWidget::onResumed() {
     onResumedDefault();
+}
+
+void PrimeNumberProviderWidget::onCanceled() {
+    onCanceledDefault();
 }
 
 void PrimeNumberProviderWidget::onValueReceived(PrimeNumberProviderOutputValue) {

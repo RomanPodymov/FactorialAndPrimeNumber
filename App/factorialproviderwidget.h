@@ -22,6 +22,7 @@ private slots:
     void onProgress(double);
     void onPaused();
     void onResumed();
+    void onCanceled();
     void onValueReceived(FactorialProviderValue);
     void onValueReceived(QString);
 };
