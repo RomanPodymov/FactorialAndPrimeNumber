@@ -18,6 +18,9 @@ class PrimeNumberProviderWidget final: public ValueProviderWidget<PrimeNumberPro
 public:
     PrimeNumberProviderWidget(QWidget *parent = nullptr);
 
+protected:
+    void run() override;
+
 private slots:
     void onProgress(double);
     void onPaused();

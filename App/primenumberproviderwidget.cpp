@@ -9,7 +9,17 @@
 #include "primenumberproviderwidget.h"
 
 PrimeNumberProviderWidget::PrimeNumberProviderWidget(QWidget *parent): ValueProviderWidget(PrimeNumberProviderWidget::tr("Prime numbers"), parent) {
+
+}
+
+void PrimeNumberProviderWidget::run() {
+    if (valueProvider != nullptr) {
+        valueProvider->watcher.disconnect();
+        valueProvider->disconnect();
+    }
+    valueProvider = new PrimeNumberProvider();
     CONNECT_VALUE_PROVIDER_WIDGET_SLOTS(PrimeNumberProviderOutputValue)
+    ValueProviderWidget::run();
 }
 
 void PrimeNumberProviderWidget::onProgress(double value) {

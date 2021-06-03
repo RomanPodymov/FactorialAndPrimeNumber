@@ -45,7 +45,9 @@ void FactorialProvider::setupFuture(FactorialProviderValue value) {
             result.value = 1;
         }
         result.value = result.value * data.value;
-        EMIT_PROGRESS(data, result)
+        if (!isDeleted) {
+            EMIT_PROGRESS(data, result)
+        }
     }, QtConcurrent::ReduceOption::OrderedReduce | QtConcurrent::ReduceOption::SequentialReduce);
 }
 

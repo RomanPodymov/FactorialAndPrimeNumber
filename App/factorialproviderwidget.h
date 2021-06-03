@@ -18,6 +18,9 @@ class FactorialProviderWidget final: public ValueProviderWidget<FactorialProvide
 public:
     FactorialProviderWidget(QWidget *parent = nullptr);
 
+protected:
+    void run() override;
+
 private slots:
     void onProgress(double);
     void onPaused();

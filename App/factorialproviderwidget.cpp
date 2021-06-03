@@ -9,7 +9,17 @@
 #include "factorialproviderwidget.h"
 
 FactorialProviderWidget::FactorialProviderWidget(QWidget *parent): ValueProviderWidget(FactorialProviderWidget::tr("Factorial"), parent) {
+
+}
+
+void FactorialProviderWidget::run() {
+    if (valueProvider != nullptr) {
+        valueProvider->watcher.disconnect();
+        valueProvider->disconnect();
+    }
+    valueProvider = new FactorialProvider();
     CONNECT_VALUE_PROVIDER_WIDGET_SLOTS(FactorialProviderValue)
+    ValueProviderWidget::run();
 }
 
 void FactorialProviderWidget::onProgress(double value) {

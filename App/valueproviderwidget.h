@@ -21,12 +21,12 @@
 enum ValueProviderUIState { iddle, running, pausing, paused, resuming, cancelling };
 
 #define CONNECT_VALUE_PROVIDER_WIDGET_SLOTS(VALUE_RECEIVED_TYPE) \
-    QObject::connect(&valueProvider, SIGNAL(progress(double)), this, SLOT(onProgress(double))); \
-    QObject::connect(&valueProvider, SIGNAL(paused()), this, SLOT(onPaused())); \
-    QObject::connect(&valueProvider, SIGNAL(resumed()), this, SLOT(onResumed())); \
-    QObject::connect(&valueProvider, SIGNAL(canceled()), this, SLOT(onCanceled())); \
-    QObject::connect(&valueProvider, SIGNAL(valueReceived(VALUE_RECEIVED_TYPE)), this, SLOT(onValueReceived(VALUE_RECEIVED_TYPE))); \
-    QObject::connect(&valueProvider, SIGNAL(valueReceived(QString)), this, SLOT(onValueReceived(QString)));
+    QObject::connect(valueProvider, SIGNAL(progress(double)), this, SLOT(onProgress(double))); \
+    QObject::connect(valueProvider, SIGNAL(paused()), this, SLOT(onPaused())); \
+    QObject::connect(valueProvider, SIGNAL(resumed()), this, SLOT(onResumed())); \
+    QObject::connect(valueProvider, SIGNAL(canceled()), this, SLOT(onCanceled())); \
+    QObject::connect(valueProvider, SIGNAL(valueReceived(VALUE_RECEIVED_TYPE)), this, SLOT(onValueReceived(VALUE_RECEIVED_TYPE))); \
+    QObject::connect(valueProvider, SIGNAL(valueReceived(QString)), this, SLOT(onValueReceived(QString)));
 
 template <typename ValueProviderType>
 class ValueProviderWidget: public QWidget {
@@ -51,32 +51,28 @@ public:
 
         buttonRun = new QPushButton(QWidget::tr("Run"));
         QObject::connect(buttonRun, &QPushButton::pressed, [&]() {
-            setupValueProviderUIState(running);
-            textOutput->setText("");
-            progressBar->setValue(0);
-            const auto textInputValue = textInput->toPlainText();
-            valueProvider.load(textInputValue);
+            run();
         });
         buttonsLayout->addWidget(buttonRun);
 
         buttonCancel = new QPushButton(QWidget::tr("Cancel"));
         QObject::connect(buttonCancel, &QPushButton::pressed, [&]() {
             setupValueProviderUIState(cancelling);
-            valueProvider.cancel();
+            valueProvider->cancel();
         });
         buttonsLayout->addWidget(buttonCancel);
 
         buttonPause = new QPushButton(QWidget::tr("Pause"));
         QObject::connect(buttonPause, &QPushButton::pressed, [&]() {
             setupValueProviderUIState(pausing);
-            valueProvider.pause();
+            valueProvider->pause();
         });
         buttonsLayout->addWidget(buttonPause);
 
         buttonResume = new QPushButton(QWidget::tr("Resume"));
         QObject::connect(buttonResume, &QPushButton::pressed, [&]() {
             setupValueProviderUIState(resuming);
-            valueProvider.resume();
+            valueProvider->resume();
         });
         buttonsLayout->addWidget(buttonResume);
 
@@ -107,6 +103,14 @@ public:
     }
 
 protected:
+    virtual void run() {
+        setupValueProviderUIState(running);
+        textOutput->setText("");
+        progressBar->setValue(0);
+        const auto textInputValue = textInput->toPlainText();
+        valueProvider->load(textInputValue);
+    }
+
     void setupValueProviderUIState(std::optional<ValueProviderUIState> nextValueProviderUIState) {
         const auto previousValueProviderUIState = nextValueProviderUIState;
         if (nextValueProviderUIState) {
@@ -164,7 +168,9 @@ protected:
     }
 
     void onCanceledDefault() {
+        progressBar->setValue(0);
         setupValueProviderUIState(iddle);
+        valueProvider->isDeleted = true;
     }
 
     void onValueReceivedDefault(QString value) {
@@ -222,7 +228,7 @@ private:
     }
 
 protected:
-    ValueProviderType valueProvider;
+    QPointer<ValueProviderType> valueProvider;
     ValueProviderUIState valueProviderUIState;
     const int progressBarMaxValue = 100;
 

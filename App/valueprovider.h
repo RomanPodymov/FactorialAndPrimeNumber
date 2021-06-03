@@ -46,8 +46,11 @@ public:
 protected:
     virtual void setupFuture(InputValueType) = 0;
 
-protected:
+public:
     QFutureWatcher<SequenceResult<OutputValueType>> watcher;
+    bool isDeleted = false;
+
+protected:
     QFuture<SequenceResult<OutputValueType>> future;
 };
 
