@@ -15,12 +15,7 @@ void PrimeNumberProvider::load(PrimeNumberProviderInputValue value) {
     QObject::connect(&watcher, &QFutureWatcher<PrimeNumberSequenceResult>::finished, [&]() {
         if (!integerSequence->canceled) {
             emit valueReceived(future.result().value);
-            QString result;
-            for (const auto& number : future.result().value) {
-                result += QString::number(number);
-                result += " ";
-            }
-            emit valueReceived(result);
+            emit valueReceived(stringValue(future.result().value));
         }
     });
     QObject::connect(&watcher, &QFutureWatcher<PrimeNumberSequenceResult>::suspended, [&]() {
@@ -39,6 +34,11 @@ void PrimeNumberProvider::load(QString value) {
     load(PrimeNumberProviderInputValue(value.toUInt()));
 }
 
+void PrimeNumberProvider::cancel() {
+    ValueProvider::cancel();
+    emit canceled();
+}
+
 void PrimeNumberProvider::setupFuture(PrimeNumberProviderInputValue value) {
     integerSequence = new IntegerSequence<PrimeNumberProviderInputValue, qsizetype>(1, value + PrimeNumberProviderInputValue(1));
     future = QtConcurrent::mappedReduced<PrimeNumberSequenceResult>(integerSequence->begin(), integerSequence->end(), [](auto data) {
@@ -51,6 +51,15 @@ void PrimeNumberProvider::setupFuture(PrimeNumberProviderInputValue value) {
             EMIT_PROGRESS(data, result)
         }
     }, QtConcurrent::ReduceOption::OrderedReduce | QtConcurrent::ReduceOption::SequentialReduce);
+}
+
+QString PrimeNumberProvider::stringValue(PrimeNumberProviderOutputValue value) {
+    QString result;
+    for (const auto& number : value) {
+        result += QString::number(number);
+        result += " ";
+    }
+    return result;
 }
 
 bool PrimeNumberProvider::isPrimeNumber(PrimeNumberProviderInputValue value) {

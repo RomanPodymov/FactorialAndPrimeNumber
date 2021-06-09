@@ -18,7 +18,7 @@ void FactorialProvider::load(FactorialProviderValue value) {
     QObject::connect(&watcher, &QFutureWatcher<FactorialSequenceResult>::finished, [&]() {
         if (!integerSequence->canceled) {
             emit valueReceived(future.result().value);
-            emit valueReceived(QString(future.result().value));
+            emit valueReceived(stringValue(future.result().value));
         }
     });
     QObject::connect(&watcher, &QFutureWatcher<FactorialSequenceResult>::suspended, [&]() {
@@ -37,6 +37,11 @@ void FactorialProvider::load(QString value) {
     load(FactorialProviderValue(value));
 }
 
+void FactorialProvider::cancel() {
+    ValueProvider::cancel();
+    emit canceled();
+}
+
 void FactorialProvider::setupFuture(FactorialProviderValue value) { 
     integerSequence = new IntegerSequence<FactorialProviderValue, qsizetype>(1, value + FactorialProviderValue(1));
     future = QtConcurrent::mappedReduced<FactorialSequenceResult>(integerSequence->begin(), integerSequence->end(), [](auto data) {
@@ -50,6 +55,10 @@ void FactorialProvider::setupFuture(FactorialProviderValue value) {
             EMIT_PROGRESS(data, result)
         }
     }, QtConcurrent::ReduceOption::OrderedReduce | QtConcurrent::ReduceOption::SequentialReduce);
+}
+
+QString FactorialProvider::stringValue(FactorialProviderValue value) {
+    return QString(value);
 }
 
 bool FactorialProvider::preprocessValue(FactorialProviderValue value) {

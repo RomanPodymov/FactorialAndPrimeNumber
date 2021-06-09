@@ -106,6 +106,7 @@ public:
 protected:
     virtual void run() {
         setupValueProviderUIState(running);
+        textInput->setReadOnly(true);
         textOutput->setText("");
         progressBar->setValue(0);
         const auto textInputValue = textInput->toPlainText();
@@ -174,10 +175,12 @@ protected:
         disconnect();
         delete valueProvider;
         progressBar->setValue(0);
+        textInput->setReadOnly(false);
         setupValueProviderUIState(iddle);
     }
 
     void onValueReceivedDefault(QString value) {
+        textInput->setReadOnly(false);
         textOutput->setText(value);
         setupValueProviderUIState(iddle);
     }

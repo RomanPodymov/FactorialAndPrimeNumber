@@ -21,10 +21,7 @@ class FactorialProvider final: public ValueProvider<FactorialProviderValue, Fact
 public:
     void load(FactorialProviderValue) override;
     void load(QString) override;
-    void cancel() override {
-        ValueProvider::cancel();
-        emit canceled();
-    }
+    void cancel() override;
 
 signals:
     void progress(double);
@@ -36,6 +33,7 @@ signals:
 
 protected:
     void setupFuture(FactorialProviderValue) override;
+    QString stringValue(FactorialProviderValue) override;
 
 private:
     bool preprocessValue(FactorialProviderValue);

@@ -22,6 +22,7 @@ class PrimeNumberProvider final: public ValueProvider<PrimeNumberProviderInputVa
 public:
     void load(PrimeNumberProviderInputValue) override;
     void load(QString) override;
+    void cancel() override;
 
 signals:
     void progress(double);
@@ -33,6 +34,7 @@ signals:
 
 protected:
     void setupFuture(PrimeNumberProviderInputValue) override;
+    QString stringValue(PrimeNumberProviderOutputValue) override;
 
 private:
     bool isPrimeNumber(PrimeNumberProviderInputValue);

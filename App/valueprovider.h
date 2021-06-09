@@ -52,6 +52,7 @@ public:
 
 protected:
     virtual void setupFuture(InputValueType) = 0;
+    virtual QString stringValue(OutputValueType) = 0;
 
 private:
     void cancelDefault() {
