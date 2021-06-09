@@ -7,7 +7,6 @@
 //
 
 #include "factorialprovider.h"
-#include "integersequence.h"
 #include <QFuture>
 #include <QtConcurrent>
 
@@ -17,8 +16,10 @@ void FactorialProvider::load(FactorialProviderValue value) {
     }
     setupFuture(value);
     QObject::connect(&watcher, &QFutureWatcher<FactorialSequenceResult>::finished, [&]() {
-        emit valueReceived(future.result().value);
-        emit valueReceived(QString(future.result().value));
+        if (!integerSequence->canceled) {
+            emit valueReceived(future.result().value);
+            emit valueReceived(QString(future.result().value));
+        }
     });
     QObject::connect(&watcher, &QFutureWatcher<FactorialSequenceResult>::suspended, [&]() {
         emit paused();
@@ -37,15 +38,15 @@ void FactorialProvider::load(QString value) {
 }
 
 void FactorialProvider::setupFuture(FactorialProviderValue value) { 
-    IntegerSequence<FactorialProviderValue, qsizetype> factorialSequence(1, value + FactorialProviderValue(1));
-    future = QtConcurrent::mappedReduced<FactorialSequenceResult>(factorialSequence.begin(), factorialSequence.end(), [](auto data) {
+    integerSequence = new IntegerSequence<FactorialProviderValue, qsizetype>(1, value + FactorialProviderValue(1));
+    future = QtConcurrent::mappedReduced<FactorialSequenceResult>(integerSequence->begin(), integerSequence->end(), [](auto data) {
         return data;
     }, [&](FactorialSequenceResult& result, auto data) {
         if (result.value.isEmpty()) {
             result.value = 1;
         }
         result.value = result.value * data.value;
-        if (!isDeleted) {
+        if (!integerSequence->canceled) {
             EMIT_PROGRESS(data, result)
         }
     }, QtConcurrent::ReduceOption::OrderedReduce | QtConcurrent::ReduceOption::SequentialReduce);

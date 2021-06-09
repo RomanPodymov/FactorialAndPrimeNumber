@@ -38,28 +38,44 @@ public:
             Size maxPosition;
         };
 
-        ConstIterator(T value, Size position, Size maxPosition) : data(value, position, maxPosition) { }
+        ConstIterator(T value, Size position, Size maxPosition, const bool& canceled) : data(value, position, maxPosition), canceled(canceled) { }
         ConstIterator operator++() {
             ConstIterator i = *this;
             data = Data(data.value + T(1), data.position + 1, data.maxPosition);
             return i;
         }
         reference& operator*() { return data; }
-        bool operator!=(const ConstIterator& rhs) { return data.position != rhs.data.position; }
+        bool operator!=(const ConstIterator& rhs) {
+            if (canceled) {
+                return false;
+            }
+            return data.position != rhs.data.position;
+        }
 
     private:
         Data data;
+        const bool& canceled;
     };
 
     IntegerSequence(T min, T max) : min(min), max(max) { }
+    ~IntegerSequence() {
+        cancel();
+    }
 
     ConstIterator begin() const {
-        return ConstIterator(min, 0, max - min);
+        return ConstIterator(min, 0, max - min, canceled);
     }
 
     ConstIterator end() const {
-        return ConstIterator(max, max - min, max - min);
+        return ConstIterator(max, max - min, max - min, canceled);
     }
+
+    void cancel() {
+        canceled = true;
+    }
+
+public:
+    bool canceled = false;
 
 private:
     T min;

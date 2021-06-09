@@ -9,6 +9,7 @@
 #ifndef VALUEPROVIDER_H
 #define VALUEPROVIDER_H
 
+#include "integersequence.h"
 #include <QFutureWatcher>
 
 #define EMIT_PROGRESS(data, result) \
@@ -31,6 +32,12 @@ template <typename InputValueType, typename OutputValueType>
 class ValueProvider: public QObject {
 
 public:
+    ~ValueProvider() {
+        if (!integerSequence->canceled) {
+            cancelDefault();
+        }
+        delete integerSequence;
+    }
     virtual void load(InputValueType) = 0;
     virtual void load(QString) = 0;
     void pause() {
@@ -39,19 +46,28 @@ public:
     void resume() {
         future.resume();
     }
-    void cancel() {
-        future.cancel();
+    virtual void cancel() {
+        cancelDefault();
     }
 
 protected:
     virtual void setupFuture(InputValueType) = 0;
 
+private:
+    void cancelDefault() {
+        integerSequence->cancel();
+        if (future.isSuspended()) {
+            resume();
+        }
+        future.waitForFinished();
+    }
+
 public:
     QFutureWatcher<SequenceResult<OutputValueType>> watcher;
-    bool isDeleted = false;
 
 protected:
     QFuture<SequenceResult<OutputValueType>> future;
+    IntegerSequence<InputValueType, qsizetype>* integerSequence;
 };
 
 #endif // VALUEPROVIDER_H

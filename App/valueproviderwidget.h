@@ -89,6 +89,7 @@ public:
     }
 
     ~ValueProviderWidget() {
+        delete valueProvider;
         delete rootLayout;
         delete groupBoxLayout;
         delete groupBox;
@@ -168,9 +169,12 @@ protected:
     }
 
     void onCanceledDefault() {
+        valueProvider->watcher.disconnect();
+        valueProvider->disconnect();
+        disconnect();
+        delete valueProvider;
         progressBar->setValue(0);
         setupValueProviderUIState(iddle);
-        valueProvider->isDeleted = true;
     }
 
     void onValueReceivedDefault(QString value) {

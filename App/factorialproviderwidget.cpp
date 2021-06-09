@@ -13,10 +13,6 @@ FactorialProviderWidget::FactorialProviderWidget(QWidget *parent): ValueProvider
 }
 
 void FactorialProviderWidget::run() {
-    if (valueProvider != nullptr) {
-        valueProvider->watcher.disconnect();
-        valueProvider->disconnect();
-    }
     valueProvider = new FactorialProvider();
     CONNECT_VALUE_PROVIDER_WIDGET_SLOTS(FactorialProviderValue)
     ValueProviderWidget::run();

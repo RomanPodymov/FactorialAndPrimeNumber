@@ -13,10 +13,6 @@ PrimeNumberProviderWidget::PrimeNumberProviderWidget(QWidget *parent): ValueProv
 }
 
 void PrimeNumberProviderWidget::run() {
-    if (valueProvider != nullptr) {
-        valueProvider->watcher.disconnect();
-        valueProvider->disconnect();
-    }
     valueProvider = new PrimeNumberProvider();
     CONNECT_VALUE_PROVIDER_WIDGET_SLOTS(PrimeNumberProviderOutputValue)
     ValueProviderWidget::run();
