@@ -32,11 +32,9 @@ signals:
     void valueReceived(QString);
 
 protected:
+    bool preprocessValue(FactorialProviderValue) override;
     void setupFuture(FactorialProviderValue) override;
     QString stringValue(FactorialProviderValue) override;
-
-private:
-    bool preprocessValue(FactorialProviderValue);
 };
 
 #endif // FACTORIALPROVIDER_H

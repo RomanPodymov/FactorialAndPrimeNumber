@@ -11,26 +11,7 @@
 #include <QtConcurrent>
 
 void FactorialProvider::load(FactorialProviderValue value) {
-    if (preprocessValue(value)) {
-        return;
-    }
-    setupFuture(value);
-    QObject::connect(&watcher, &QFutureWatcher<FactorialSequenceResult>::finished, [&]() {
-        if (!integerSequence->canceled) {
-            emit valueReceived(future.result().value);
-            emit valueReceived(stringValue(future.result().value));
-        }
-    });
-    QObject::connect(&watcher, &QFutureWatcher<FactorialSequenceResult>::suspended, [&]() {
-        emit paused();
-    });
-    QObject::connect(&watcher, &QFutureWatcher<FactorialSequenceResult>::resumed, [&]() {
-        emit resumed();
-    });
-    QObject::connect(&watcher, &QFutureWatcher<FactorialSequenceResult>::canceled, [&]() {
-        emit canceled();
-    });
-    watcher.setFuture(future);
+    VALUE_PROVIDER_LOAD(FactorialSequenceResult, value)
 }
 
 void FactorialProvider::load(QString value) {
@@ -40,6 +21,15 @@ void FactorialProvider::load(QString value) {
 void FactorialProvider::cancel() {
     ValueProvider::cancel();
     emit canceled();
+}
+
+bool FactorialProvider::preprocessValue(FactorialProviderValue value) {
+    if (value == FactorialProviderValue(0)) {
+        emit progress(1.0);
+        emit valueReceived(FactorialProviderValue(1));
+        return true;
+    }
+    return false;
 }
 
 void FactorialProvider::setupFuture(FactorialProviderValue value) { 
@@ -59,13 +49,4 @@ void FactorialProvider::setupFuture(FactorialProviderValue value) {
 
 QString FactorialProvider::stringValue(FactorialProviderValue value) {
     return QString(value);
-}
-
-bool FactorialProvider::preprocessValue(FactorialProviderValue value) {
-    if (value == FactorialProviderValue(0)) {
-        emit progress(1.0);
-        emit valueReceived(FactorialProviderValue(1));
-        return true;
-    }
-    return false;
 }

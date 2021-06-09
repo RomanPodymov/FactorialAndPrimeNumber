@@ -20,6 +20,28 @@
         emit progress(progressValue); \
     }
 
+#define VALUE_PROVIDER_LOAD(SEQUENCE_RESULT_TYPE, value) \
+    if (preprocessValue(value)) { \
+        return; \
+    } \
+    setupFuture(value); \
+    QObject::connect(&watcher, &QFutureWatcher<SEQUENCE_RESULT_TYPE>::finished, [&]() { \
+        if (!integerSequence->canceled) { \
+            emit valueReceived(future.result().value); \
+            emit valueReceived(stringValue(future.result().value)); \
+        } \
+    }); \
+    QObject::connect(&watcher, &QFutureWatcher<SEQUENCE_RESULT_TYPE>::suspended, [&]() { \
+        emit paused(); \
+    }); \
+    QObject::connect(&watcher, &QFutureWatcher<SEQUENCE_RESULT_TYPE>::resumed, [&]() { \
+        emit resumed(); \
+    }); \
+    QObject::connect(&watcher, &QFutureWatcher<SEQUENCE_RESULT_TYPE>::canceled, [&]() { \
+        emit canceled(); \
+    }); \
+    watcher.setFuture(future);
+
 template <typename ValueType>
 struct SequenceResult {
     SequenceResult(): value(ValueType()), position(0) { }
@@ -51,6 +73,7 @@ public:
     }
 
 protected:
+    virtual bool preprocessValue(InputValueType) { return false; }
     virtual void setupFuture(InputValueType) = 0;
     virtual QString stringValue(OutputValueType) = 0;
 

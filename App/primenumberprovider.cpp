@@ -11,23 +11,7 @@
 #include <QtConcurrent>
 
 void PrimeNumberProvider::load(PrimeNumberProviderInputValue value) {
-    setupFuture(value);
-    QObject::connect(&watcher, &QFutureWatcher<PrimeNumberSequenceResult>::finished, [&]() {
-        if (!integerSequence->canceled) {
-            emit valueReceived(future.result().value);
-            emit valueReceived(stringValue(future.result().value));
-        }
-    });
-    QObject::connect(&watcher, &QFutureWatcher<PrimeNumberSequenceResult>::suspended, [&]() {
-        emit paused();
-    });
-    QObject::connect(&watcher, &QFutureWatcher<PrimeNumberSequenceResult>::resumed, [&]() {
-        emit resumed();
-    });
-    QObject::connect(&watcher, &QFutureWatcher<PrimeNumberSequenceResult>::canceled, [&]() {
-        emit canceled();
-    });
-    watcher.setFuture(future);
+    VALUE_PROVIDER_LOAD(PrimeNumberSequenceResult, value)
 }
 
 void PrimeNumberProvider::load(QString value) {
