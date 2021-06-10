@@ -158,7 +158,9 @@ protected:
     }
 
     void onProgressDefault(double value) {
-        progressBar->setValue(value * progressBarMaxValue);
+        if (valueProviderUIState == running) {
+            progressBar->setValue(value * progressBarMaxValue);
+        }
     }
 
     void onPausedDefault() {
