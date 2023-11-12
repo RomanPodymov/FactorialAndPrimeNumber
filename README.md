@@ -7,3 +7,5 @@
 
 * C++17 compatible compiler
 * Qt 6.6.0: https://www.qt.io
+
+Before building the app, run `lupdate` and `lrelease`
