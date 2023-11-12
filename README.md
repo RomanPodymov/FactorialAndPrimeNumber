@@ -1,7 +1,7 @@
 # FactorialAndPrimeNumber
 
-![FactorialAndPrimeNumber running](https://github.com/RomanPodymov/FactorialAndPrimeNumber/blob/main/Screenshot/gameplay.png "FactorialAndPrimeNumber running")
-![FactorialAndPrimeNumber completed](https://github.com/RomanPodymov/FactorialAndPrimeNumber/blob/main/Screenshot/pause.png "FactorialAndPrimeNumber completed")
+![FactorialAndPrimeNumber running](https://github.com/RomanPodymov/FactorialAndPrimeNumber/blob/main/Screenshot/running.png "FactorialAndPrimeNumber running")
+![FactorialAndPrimeNumber completed](https://github.com/RomanPodymov/FactorialAndPrimeNumber/blob/main/Screenshot/completed.png "FactorialAndPrimeNumber completed")
  
 ## Dependencies
 
